@@ -24,4 +24,4 @@ node scripts/airdrop.js --file recipients.csv --token 0xYOUR_TOKEN
 
 ## License
 MIT
-<!-- updated: 2024-08-24-r01 -->
+<!-- updated: 2024-12-18-r01 -->
