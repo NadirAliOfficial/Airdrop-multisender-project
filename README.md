@@ -1,21 +1,114 @@
-# Airdrop Multisender Development Assessment
+# Airdrop Multisender Platform
 
-## Objective
-The purpose of this test project is to evaluate your ability to implement essential blockchain-related functionalities. The tasks below reflect real-world scenarios you may encounter in our airdrop multisender project.
+This is a blockchain-based **Airdrop Multisender Platform** built using **React**, **Hardhat**, and **MetaMask**. It allows you to easily distribute tokens to multiple wallet addresses by uploading a CSV file.
 
-## Task Details
-1. Integrate MetaMask Wallet
-- Implement functionality to connect a MetaMask wallet to your application.
-- Display the connected wallet address once successfully authenticated.
-2. Validate Recipient Addresses from CSV File
-- Create functionality to upload a CSV file containing recipient addresses.
-- Implement robust validation to ensure addresses are properly formatted (valid Ethereum addresses) and no duplicate or invalid entries are processed.
-3. Transfer Tokens to a Specified Recipient Address
-- Implement a feature to transfer a predefined token from the connected wallet to a specified recipient address.
-- Ensure the transaction is secure and includes proper error handling (insufficient balance or gas issues).
+## 🚀 Features
+- **MetaMask Integration** for wallet connection.
+- **CSV File Upload** for batch address imports.
+- **Validation of Recipient Addresses** (valid/invalid address check).
+- **Token Transfer Functionality** to send predefined tokens to valid addresses.
+- **Network Switching** to ensure transactions occur on the desired blockchain network (Local Hardhat).
 
-## Setup
-1. Clone the repository and run `npm install --legacy-peer-deps` to install the dependencies.
-    > Please use Node version 18.19.0.
-2. Before running the project check the src/components/config.js.
-3. Run `npm run start` to start the dev server.
+---
+
+## 📂 Project Structure
+```bash
+├── src
+│   ├── components
+│   │   ├── Transfer/  # Token transfer logic
+│   │   ├── Wallet/    # MetaMask connection logic
+│   │   └── config.js  # Configuration for API, RPC, and keys
+├── scripts
+│   └── deploy.js      # Deployment script for smart contracts
+├── contracts
+│   └── Token.sol      # Smart contract for token distribution
+├── .gitignore
+├── README.md
+└── package.json
+```
+
+---
+
+## ⚙️ Technologies Used
+- **React**: Frontend framework
+- **Hardhat**: Ethereum development environment
+- **MetaMask**: Wallet connection for interacting with blockchain
+- **Ethers.js**: JavaScript library to interact with Ethereum blockchain
+
+---
+
+## 🔧 Setup Instructions
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/NadirAliOfficial/Airdrop-multisender-project.git
+cd repo
+```
+
+### 2. Install Dependencies
+```bash
+npm install --legacy-peer-deps
+```
+
+### 3. Setup Environment Variables
+Create a `.env` file and add the following:
+```env
+API_URL=http://localhost:8000
+RPC_URL=http://127.0.0.1:8545
+SECRET_KEY=your-private-key
+TOKEN_ADDRESS=deployed-token-address
+```
+
+> **Note:** Ensure `.env` is listed in `.gitignore`.
+
+### 4. Start the Hardhat Local Node
+```bash
+npx hardhat node
+```
+
+### 5. Deploy the Smart Contract
+```bash
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+### 6. Run the React Application
+```bash
+npm start
+```
+
+---
+
+## ✅ Usage Instructions
+
+1. **Connect MetaMask** to the Local Hardhat Network.
+   - RPC URL: `http://127.0.0.1:8545`
+   - Chain ID: `31337`
+
+2. **Upload CSV File** with wallet addresses:
+   ```csv
+   Address
+   0xabc123...
+   0xdef456...
+   ```
+
+3. **Validate Addresses**: The UI will display valid and invalid addresses.
+
+4. **Transfer Tokens**:
+   - Set the token quantity per wallet.
+   - Click **Send Tokens** to initiate the transaction.
+
+5. **Check MetaMask** to confirm the transaction.
+
+---
+
+## ⚠️ Troubleshooting
+- **Error: Network Auto-Switching to Mainnet?**
+  - Ensure MetaMask is set to the Local Hardhat network.
+  - Clear previous connections in MetaMask settings.
+
+- **Gas Fee Errors?**
+  - Ensure sufficient ETH balance in your Hardhat local accounts.
+
+- **Transaction Failures?**
+  - Verify if the Hardhat node is running.
+  - Check if the `config.js` has correct RPC and Token Address.
