@@ -51,17 +51,21 @@ function App() {
   };
 
   const handleConnect = async () => {
-    if (isConnected) {
-      const confirmDisconnect = window.confirm("Do you want to disconnect?");
-      if (confirmDisconnect) {
-        setIsConnected(false);
-      }
+    if (window.ethereum) {
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            setWalletAddress(accounts[0]);
+            setIsConnected(true);
+            alert(`Wallet connected: ${accounts[0]}`);
+        } catch (error) {
+            console.error(error);
+            alert("Connection failed! Please try again.");
+        }
     } else {
-      // Placeholder for future MetaMask logic
-      alert("Simulating wallet connection. MetaMask support coming soon.");
-      setIsConnected(true);
+        alert("MetaMask not detected. Please install MetaMask first.");
     }
-  };
+};
+
 
   // Airdrop logic
   const handleAirdrop = async () => {
@@ -95,6 +99,8 @@ function App() {
     setLoading(false);
   };
 
+  
+
   return (
     <div className="App">
       <Nav />
@@ -126,11 +132,14 @@ function App() {
             balanceAmount={balanceAmount}
           />
           <Transfer
-            quantity={quantity}
-            setQuantity={setQuantity}
-            totalQuantity={wallets?.length ? wallets.length * quantity : 0}
-            balanceAmount={balanceAmount}
-          />
+          wallets={wallets}
+          tokenAddress={tokenAddress}
+          quantity={quantity}
+          setQuantity={setQuantity}
+          isConnected={isConnected}
+          balanceAmount={balanceAmount}
+         />
+
           <Fee
             fee={fee}
             setFee={setFee}

@@ -1,20 +1,29 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Node modules
+node_modules/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-/.yarn
+# Environment variables
+.env
 
-# testing
-/coverage
+# Build files
+dist/
+build/
 
-# production
-/build
+# Logs
+logs/
+*.log
 
-# misc
+# System files
 .DS_Store
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Local Environment Config
+config.js
+
+# Hardhat Cache
+cache/
+artifacts/
+
+# VSCode settings
+.vscode/
+
+# Ignore Hardhat local node artifacts
+hardhat-node/

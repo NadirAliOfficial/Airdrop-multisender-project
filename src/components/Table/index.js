@@ -1,101 +1,73 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/rules-of-hooks */
-import Table from "react-bootstrap/Table";
-import Pagination from "react-bootstrap/Pagination";
+import { ethers } from "ethers";
+import Papa from "papaparse";
+import { useState } from "react";
 import Button from "react-bootstrap/Button";
-import InputGroup from "react-bootstrap/InputGroup";
-import Form from "react-bootstrap/Form";
-import { useEffect, useState } from "react";
-import "./style.css";
+import Table from "react-bootstrap/Table";
 
-const SenderTable = (props) => {
-  let indexOfLastItem;
-  let indexOfFirstItem;
-  let currentItems;
-  const { wallets, setWallets, isConnected } = props;
-  const { currentPage, setCurrentPage } = useState(1);
-  const [itemPerPage] = useState(5);
+const SenderTable = ({ wallets, setWallets, isConnected }) => {
+    const [invalidAddresses, setInvalidAddresses] = useState([]);
 
-  useEffect(() => {
-    indexOfLastItem = currentPage * itemPerPage;
-    indexOfFirstItem = indexOfLastItem - itemPerPage;
-    currentItems = wallets && wallets.slice(indexOfFirstItem, indexOfLastItem);
-  }, [wallets, currentPage]);
+    const validateAddress = (address) => {
+        return ethers.isAddress(address);
+    };
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-  const uploadWallet = async (e) => {
-    // setWallets(dummy);
-    const response = await fetch(process.env.PUBLIC_URL + "/wallets.csv");
-    const data = await response.text();
-    const dataArray = data.replace(/\s/g, "").split(",");
-    const resultArr = dataArray.filter((item) => item !== "");
-    setWallets(resultArr);
-  };
+    const handleCSVUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-  return (
-    <div>
-      <Table responsive>
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Wallet Address</th>
-          </tr>
-        </thead>
-        <tbody>
-          {wallets && wallets.length > 0
-            ? wallets.map((e, idx) => {
-                return (
-                  <tr>
-                    <td>{idx + 1}</td>
-                    <td>{e}</td>
-                  </tr>
-                );
-              })
-            : "No data"}
-        </tbody>
-      </Table>
+        Papa.parse(file, {
+            complete: (results) => {
+                const rawData = results.data.flat();
+                const unique = new Set();
+                const valid = [];
+                const invalid = [];
 
-      {/* <Pagination>
-        {[
-          ...Array(Math.ceil(wallets && wallets.length / itemPerPage)).key(),
-        ].map(
-          // eslint-disable-next-line array-callback-return
-          (number) => {
-            <Pagination.Item
-              key={number + 1}
-              active={number + 1 === currentPage}
-              onClick={() => handlePageChange(number + 1)}
-            >
-              {number + 1}
-            </Pagination.Item>;
-          }
-        )}
-      </Pagination> */}
+                rawData.forEach((address) => {
+                    const cleanAddress = address.trim();
+                    if (validateAddress(cleanAddress) && !unique.has(cleanAddress)) {
+                        valid.push(cleanAddress);
+                        unique.add(cleanAddress);
+                    } else {
+                        invalid.push(cleanAddress);
+                    }
+                });
 
-      <div className="tableButton">
-        <Button
-          className="uploadButton"
-          disabled={!isConnected}
-          onClick={uploadWallet}
-        >
-          Upload file
-        </Button>
-        {/* <InputGroup className="addButton">
-          <Form.Control
-            placeholder="New Wallet Address"
-            aria-label="Recipient's username"
-            aria-describedby="basic-addon2"
-            aria-disabled={!isConnected}
-          />
-          <Button variant="primary" id="button-addon2" disabled={!isConnected}>
-            Add
-          </Button>
-        </InputGroup> */}
-      </div>
-    </div>
-  );
+                setWallets(valid);
+                setInvalidAddresses(invalid);
+            }
+        });
+    };
+
+    return (
+        <div>
+            <input type="file" accept=".csv" onChange={handleCSVUpload} disabled={!isConnected} />
+            
+            <h3>Valid Addresses</h3>
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {wallets.map((address, idx) => (
+                        <tr key={idx}>
+                            <td>{idx + 1}</td>
+                            <td>{address}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+
+            <h3>Invalid Addresses</h3>
+            <ul>
+                {invalidAddresses.map((address, idx) => (
+                    <li key={idx} style={{ color: "red" }}>{address}</li>
+                ))}
+            </ul>
+        </div>
+    );
 };
 
 export default SenderTable;
